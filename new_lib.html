@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>library</title>
+</head>
+<body onload="get()" onunload="save()">
+        <input id="book_no" type="text" placeholder="Book Number">
+        <input id="book_type" type="text" placeholder="Book type">
+        <input id="book_name" type="text" placeholder="Book Name">
+        <input id="book_year" type="text" placeholder="Book Year">
+        <input id="book_author" type="text" placeholder="Book Author">
+        <input id="stock" type="number" placeholder="Book Stock"> 
+        <Button style="color: aqua; margin-left: 5px;" onclick="add_book()">Add Book</Button>
+        <button style="color: rgb(255, 72, 0); margin-left: 5px;" onclick="view_lib()">View Library</button>
+        <div>
+            <input id="search_bk" type="text" value="" placeholder="Search your book" oninput="">
+            <button style="color: rgb(94, 255, 0); margin-left: 5px;" onclick="fetch_book()">Get Book</button>
+            <button style="color: white; margin-left: 5px; background-color: rgb(255, 0, 0)" onclick="delete_book()">Delete</button>
+        </div>
+        <div >
+            <table id="display" width='100%' border="1"></table>
+        </div>
+        <div>
+            <input onkeyup="letbook()" id="let_out" type="number" placeholder="Number of books">
+            <button onclick="letbook()">Borrow Book</button>
+            
+        </div>
+    <script type="text/javascript">
+        var get_book = []
+        var b_name = book_name.value 
+        function save() {
+            localStorage.setItem('lib',JSON.stringify(get_book))
+            
+        }
+        function get() {
+            get_book = JSON.parse(localStorage.getItem('lib'));            
+        }
+
+        function add_book() {
+            var book = {b_num: book_no.value, b_type: book_type.value, b_name: book_name.value, b_year: book_year.value, b_auth: book_author.value, b_stk:Number(stock.value)}
+            get_book.push(book)
+            console.log(get_book)
+        }
+        function view_lib() {
+            var bk = '';
+            display.innerHTML='<tr><th>Book Number</th><th>Book Type</th><th>Book Name</th><th>Book Year</th><th>Book Author</th><th>Stock</th><th>Delete</th></tr>'
+           if (get_book != null){
+            get_book.map(h=>{
+                bk += `<tr><td>${h.b_num}</td><td>${h.b_type}</td><td>${h.b_name}</td><td>${h.b_year}</td><td>${h.b_auth}</td><td>${h.b_stk}</td><td><button onclick="delete_book(${h.b_num})">Delete</button></td></tr>`
+            })
+
+           }
+            display.innerHTML += bk;
+            
+        }
+        var borr =[];
+        function fetch_book() {
+            var bk = '';
+            display.innerHTML='<tr><th>Book Number</th><th>Book Type</th><th>Book Name</th><th>Book Year</th><th>Book Author</th><th>Stock</th></tr>'
+            var find_book = search_bk.value
+            if (get_book != null){
+            borr = get_book.filter( f=> f.b_name == find_book);
+            borr.map(g => {
+                bk += `<tr><td>${g.b_num}</td><td>${g.b_type}</td><td>${g.b_name}</td><td>${g.b_year}</td><td>${g.b_auth}</td><td>${g.b_stk}</td><td><button onclick="delete_book(${g.b_num})">Delete</button></tr>`
+            } )
+            }
+            display.innerHTML += bk
+
+        }
+        function letbook() {
+            var bk = '';
+            borr[0].b_stk -=let_out.value;
+            get_book.indexOf(borr[0].b_num) == borr[0];
+            view_lib()
+        }
+
+        function delete_book(a) {
+            var bk = '';
+            display.innerHTML='<tr><th>Book Number</th><th>Book Type</th><th>Book Name</th><th>Book Year</th><th>Book Author</th><th>Stock</th></tr>'
+            var find_book = search_bk.value
+            var borrow = [];
+            var borr =[];
+            borrow.push(get_book);
+            borr = get_book.filter( f=> f.b_num != a);
+            get_book=borr
+            get_book.map(g => {
+                bk += `<tr><td>${g.b_num}</td><td>${g.b_type}</td><td>${g.b_name}</td><td>${g.b_year}</td><td>${g.b_auth}</td><td>${g.b_stk}</td><td><button onclick="delete_book(${g.b_num})">Delete</button></tr>`
+            } )
+            display.innerHTML += bk
+        }
+    </script>
+</body>
+</html>
